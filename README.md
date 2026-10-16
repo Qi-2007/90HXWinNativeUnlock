@@ -3,8 +3,10 @@
 原 Native 解锁方案的独立项目：命令行 worker、物理 DMA/IOMMU 驱动、原生核心及固定输入。
 不包含 GUI 源码，不依赖旧 90HXWindowsUnlock 目录。
 
+普通 Native 构建使用 `build-dma-driver.ps1`，配套 EXE、配置和 `CMP90HXUnlockNative.sys` 输出到 `build/native-driver`。EXE/SYS 的产品名称统一为 `CMP 90HX Windows Unlock`，组件描述区分 Native Worker 与 Driver，版本为四段数字。修改 EXE 或 SYS 详细信息后，需要重新编译配套驱动并签名。
+
 - `src/`：原命令行 worker。
-- `driver/`：CMP90HXDma 与 IOMMU 驱动源码。
+- `driver/`：CMP90HXUnlockNative 与 IOMMU 驱动源码。
 - `native/rebuilt-core/`：重构原生核心和固件；`vendor/` 保留现有固定 .o 输入。
 - `tools/`、`docs/`：核心构建、诊断及历史研究说明。
 - `build.ps1` 编译原 worker；`build-dma-driver.ps1 -Iommu` 编译 IOMMU 驱动。

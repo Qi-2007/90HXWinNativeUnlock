@@ -356,9 +356,9 @@ function Get-BuildPayloadHash([string]$Path) {
 }
 function Wait-BuildSignedDriver([string]$UnsignedPayloadHash,[string]$Path,[switch]$NonInteractive) {
     $root=Get-BuildRoot
-    if (!$Path) { $Path=Join-Path $root 'build\dma-driver\CMP90HXDma.sys' }
-    Write-Host 'Driver build finished. Sign build\dma-driver\CMP90HXDma.sys externally.'
-    Write-Host 'Sign CMP90HXDma.sys in place; keep its file name. A custom .sys path can also be entered below.'
+    if (!$Path) { $Path=Join-Path $root 'build\native-driver\CMP90HXUnlockNative.sys' }
+    Write-Host 'Driver build finished. Sign build\native-driver\CMP90HXUnlockNative.sys externally.'
+    Write-Host 'Sign CMP90HXUnlockNative.sys in place; keep its file name. A custom .sys path can also be entered below.'
     while ($true) {
         try {
             $Path=[IO.Path]::GetFullPath($Path)

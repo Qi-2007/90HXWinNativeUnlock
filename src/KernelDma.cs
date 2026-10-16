@@ -21,8 +21,8 @@ namespace CMP90HX
         {
             iommu=useIommu;
             try {
-                handle=Native.CreateFile(iommu?@"\\.\CMP90HXDmaIommu":@"\\.\CMP90HXDma",0xc0000000,0,IntPtr.Zero,3,0,IntPtr.Zero);
-                if(handle.IsInvalid) throw Native.Failure(Marshal.GetLastWin32Error(),"Open CMP90HXDma (administrator access and matching driver/Gen2 release required; start the driver before this process, then restart Gen2; reboot after driver updates)");
+                handle=Native.CreateFile(iommu?@"\\.\CMP90HXDmaIommu":@"\\.\CMP90HXUnlockNative",0xc0000000,0,IntPtr.Zero,3,0,IntPtr.Zero);
+                if(handle.IsInvalid) throw Native.Failure(Marshal.GetLastWin32Error(),"Open CMP90HXUnlockNative (administrator access and matching driver/Gen2 release required; start the driver before this process, then restart Gen2; reboot after driver updates)");
                 if(diagnosticsOnly) {
                     if(!iommu || map) throw new ArgumentException("PnP diagnostics require the unmapped IOMMU backend.");
                     return;
@@ -48,7 +48,7 @@ namespace CMP90HX
         }
         internal static void ValidateInfo(byte[] info,bool mapped)
         {
-            if(info.Length!=40 || BitConverter.ToUInt32(info,0)!=2) throw new IOException("CMP90HXDma protocol v2 required; sign/install the rebuilt driver and reboot if v1 is already loaded.");
+            if(info.Length!=40 || BitConverter.ToUInt32(info,0)!=2) throw new IOException("CMP90HXUnlockNative protocol v2 required; sign/install the rebuilt driver and reboot if v1 is already loaded.");
             uint state=BitConverter.ToUInt32(info,4);
             if(state==1 || state==2) throw new RetainedDmaException("DMA_RETAINED: kernel arena is armed/quarantined. Keep GPU disabled and cold boot; no EFI bootstrap is needed for the kernel backend.");
             if(state!=0) throw new IOException("Invalid kernel DMA state.");
@@ -95,8 +95,8 @@ namespace CMP90HX
         {
             uint returned;
             if(!Native.DeviceIoControl(handle,code,packet.Input,packet.InputLength,packet.Output,packet.OutputLength,out returned,IntPtr.Zero))
-                throw Native.Failure(Marshal.GetLastWin32Error(),"CMP90HXDma IOCTL 0x"+code.ToString("x8"));
-            if(returned!=packet.OutputLength) throw new IOException("Short CMP90HXDma register response.");
+                throw Native.Failure(Marshal.GetLastWin32Error(),"CMP90HXUnlockNative IOCTL 0x"+code.ToString("x8"));
+            if(returned!=packet.OutputLength) throw new IOException("Short CMP90HXUnlockNative register response.");
         }
         internal void Bind(uint gpu,uint bridge)
         {

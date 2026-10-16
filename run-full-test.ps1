@@ -68,7 +68,7 @@ try {
     if ($Mode -ne 'Status') {
     Write-Host "Using pinned core $coreVersion; conservative timing=$($Conservative.IsPresent)."
     & $exe arena-info @dmaArgs --log (Join-Path $logs 'arena.log')
-    if ($LASTEXITCODE -ne 0) { throw 'DMA backend validation failed; start CMP90HXDma and cold boot if quarantined.' }
+    if ($LASTEXITCODE -ne 0) { throw 'DMA backend validation failed; start CMP90HXUnlockNative and cold boot if quarantined.' }
     }
     # Windows can omit a Code 22 device from -PresentOnly after a reboot.
     # Include that disabled device, but reject old phantom devnodes.
@@ -148,7 +148,7 @@ try {
                     if ($LASTEXITCODE -ne 0) { $unlockCode=6 }
                 }
                 if ($unlockCode -eq 6) {
-                    Write-Host 'DMA_RETAINED: keep 90HX disabled; cold boot before retrying, then start CMP90HXDma.' -ForegroundColor Red
+                    Write-Host 'DMA_RETAINED: keep 90HX disabled; cold boot before retrying, then start CMP90HXUnlockNative.' -ForegroundColor Red
                 } elseif ($restoreDevice) {
                     Write-Host 'Re-enabling the original 90HX PnP device.'
                     Enable-PnpDevice -InstanceId $instance -Confirm:$false

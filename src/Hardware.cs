@@ -56,7 +56,7 @@ namespace CMP90HX
         }
     }
 
-    // Unified CMP90HXDma transport. PCI reads use the exact
+    // Unified CMP90HXUnlockNative transport. PCI reads use the exact
     // width: a 32-bit access at LNKSTA (cap+0x12) would cross register boundaries.
     public sealed class WindowsHardware : IHardware
     {

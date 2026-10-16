@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("CMP 90HX Unlocker")]
-[assembly: AssemblyDescription("CMP 90HX Unlock Program")]
+[assembly: AssemblyTitle("CMP 90HX Native Unlock Worker")]
+[assembly: AssemblyDescription("CMP 90HX Native unlock backend worker")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Qi")]
-[assembly: AssemblyProduct("CMP 90HX Unlocker")]
+[assembly: AssemblyProduct("CMP 90HX Windows Unlock")]
 [assembly: AssemblyCopyright("Copyright (C) 2026 Qi")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -29,5 +29,7 @@ using System.Runtime.InteropServices;
 //      生成号
 //      修订号
 //
-[assembly: AssemblyVersion("1.2.4")]
-[assembly: AssemblyFileVersion("1.2.4")]
+[assembly: AssemblyVersion("1.2.6.0")]
+[assembly: AssemblyFileVersion("1.2.6.0")]
+
+[assembly: AssemblyInformationalVersion("1.2.6.0")]

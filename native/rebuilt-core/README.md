@@ -1,5 +1,10 @@
 # GA102 源码核心 v5.1
 
+2026-10-16 增加 Quadro 源 override：从用户提供的 `4c32b72` EFI 逆向确认，compute 阶段对
+`0x823808` 执行 `(old & ~0x03900bbb) | 0x03900888`，保留其他位并在 handoff 前后校验。
+详细证据、字段和验证范围见 [EFI 分析记录](../../docs/rt-efi-20261015.md)。
+新增版本仅完成离线测试，尚未验证实机 DXR 正确性或光追性能。
+
 2026-10-08。当前 Windows GA102 `10de:220d` 解锁流程中此前复用的主机底层函数已迁到 C 源码。**发布核心不再链接原 469dc0c 主机机器码；GPU 固件仍为固定二进制数据，VBIOS 固件仍来自显卡 PROM。v4 已由用户确认实机解锁成功。v5 实机在 FWSEC 完成后返回 -1001；v5.1 修正 SEC2 复位前检查，v5.1 已签名并打包，2026-10-08 用户确认实机解锁成功。**
 
 ## 源码范围
@@ -49,11 +54,11 @@ GPU 固件没有在模拟器执行，离线测试不能替代实机解锁。证�
 
 仅重编译发布核心、不运行原对象对照时用 -SourceOnly，摘要写入 manifest-source-only.json。参考对照仍需要原对象和 Capstone。
 
-独立 v5 包在 build/rebuilt-core/dma-driver-v5.1/：CMP90HXDma.sys、匹配的 CMP90HXUnlocker.exe、配置、核心和清单。新 worker 摘要已固定到新驱动，因此 SYS 需要重新签名。签名后构建 GUI：
+独立 v5 包在 build/rebuilt-core/dma-driver-v5.1/：CMP90HXUnlockNative.sys、匹配的 CMP90HXUnlocker.exe、配置、核心和清单。新 worker 摘要已固定到新驱动，因此 SYS 需要重新签名。签名后构建 GUI：
 
 ```powershell
 .\tools\build-rebuilt-gui.ps1 -InputDirectory "$PWD\build\rebuilt-core\dma-driver-v5.1" `
-  -DriverPath "$PWD\build\rebuilt-core\dma-driver-v5.1\CMP90HXDma.sys" `
+  -DriverPath "$PWD\build\rebuilt-core\dma-driver-v5.1\CMP90HXUnlockNative.sys" `
   -OutputDirectory "$PWD\build\rebuilt-core\gui-v5.1"
 ```
 

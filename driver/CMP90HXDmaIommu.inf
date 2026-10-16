@@ -4,7 +4,7 @@ Signature="$WINDOWS NT$"
 Class=System
 ClassGuid={4D36E97D-E325-11CE-BFC1-08002BE10318}
 Provider=%Provider%
-DriverVer=10/06/2026,0.1.1.0
+DriverVer=10/16/2026,1.2.6.0
 CatalogFile=CMP90HXDmaIommu.cat
 PnpLockdown=1
 

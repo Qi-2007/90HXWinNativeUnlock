@@ -18,15 +18,16 @@ else { throw 'No matching SDK/WDK headers and kernel libraries found. Install WD
 Write-Host "MSBuild: $MSBuild"
 Write-Host "SDK/WDK: $SdkVersion; Kits root: $kitRoot"
 $target=if($Clean) {'/t:Rebuild'} else {'/t:Build'}
-& $MSBuild (Join-Path $PSScriptRoot 'driver\CMP90HXDma.vcxproj') $target /m /p:Configuration=Release /p:Platform=x64 "/p:WindowsTargetPlatformVersion=$SdkVersion" "/p:IommuBackend=$($Iommu.IsPresent.ToString().ToLowerInvariant())" /verbosity:minimal | Out-Host
+& $MSBuild (Join-Path $PSScriptRoot 'driver\CMP90HXUnlockNative.vcxproj') $target /m /p:Configuration=Release /p:Platform=x64 "/p:WindowsTargetPlatformVersion=$SdkVersion" "/p:IommuBackend=$($Iommu.IsPresent.ToString().ToLowerInvariant())" /verbosity:minimal | Out-Host
 if ($LASTEXITCODE -ne 0) { throw "WDK driver build failed: $LASTEXITCODE" }
-$sys=Join-Path $PSScriptRoot $(if($Iommu) {'build\iommu-driver\CMP90HXDmaIommu.sys'} else {'build\dma-driver\CMP90HXDma.sys'})
-if (!(Test-Path -LiteralPath $sys)) { throw 'Build produced no CMP90HXDma.sys.' }
+$sys=Join-Path $PSScriptRoot $(if($Iommu) {'build\iommu-driver\CMP90HXDmaIommu.sys'} else {'build\native-driver\CMP90HXUnlockNative.sys'})
+if (!(Test-Path -LiteralPath $sys)) { throw 'Build produced no CMP90HXUnlockNative.sys.' }
 if ((Assert-Gen2Validated) -ne $callerHash) { throw 'Gen2 changed during driver build; retry.' }
 Assert-DriverCallerPolicy $sys $callerHash
+$worker=Get-Gen2ProjectOutput
+Copy-Item -LiteralPath $worker,($worker+'.config') -Destination (Split-Path -Parent $sys) -Force
 if($Iommu) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'driver\CMP90HXDmaIommu.inf') -Destination (Split-Path -Parent $sys) -Force
-    Copy-Item -LiteralPath (Get-Gen2ProjectOutput) -Destination (Join-Path (Split-Path -Parent $sys) 'CMP90HXUnlocker.exe') -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'docs\iommu-driver-test.md') -Destination (Join-Path (Split-Path -Parent $sys) 'README.md') -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'THIRD_PARTY_NOTICES.md') -Destination (Split-Path -Parent $sys) -Force
     $core=Join-Path $PSScriptRoot 'vendor\nvpermissive-dist-469dc0c\obj\nvpermissive-core.o'

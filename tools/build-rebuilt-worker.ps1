@@ -40,13 +40,13 @@ $text=[IO.File]::ReadAllText($program)
 $marker='if (options.ContainsKey("log"))'
 if (!$text.Contains($marker)) { throw 'Program command gate layout changed; review required' }
 if (!$EnableHardwareCommands) {
-    $text=$text.Replace($marker,'if(command!="self-test" && command!="core-test" && command!="rebuilt-test") throw new IOException("Rebuilt research worker permits offline tests only.");'+[Environment]::NewLine+'                '+$marker)
+    $text=$text.Replace($marker,'if(command!="self-test" && command!="core-test" && command!="rebuilt-test" && command!="quadro-test") throw new IOException("Rebuilt research worker permits offline tests only.");'+[Environment]::NewLine+'                '+$marker)
 }
 $fullUnlock=Join-Path $temp 'FullUnlock.cs'
 $flow=[IO.File]::ReadAllText($fullUnlock)
 $flow=$flow.Replace('"469dc0c managed-handoff"','"GA102 source v5.1 managed-handoff (check core hash)"')
 [IO.File]::WriteAllText($fullUnlock,$flow,(New-Object Text.UTF8Encoding($false)))
-$text=$text.Replace('if (command == "self-test")','if (command == "rebuilt-test") return RebuiltCoreTests.Run(options["reference"], options["core"]);'+[Environment]::NewLine+'                if (command == "self-test")')
+$text=$text.Replace('if (command == "self-test")','if (command == "rebuilt-test") return RebuiltCoreTests.Run(options["reference"], options["core"]);'+[Environment]::NewLine+'                if (command == "quadro-test") return RebuiltCoreTests.RunQuadro(options["core"]);'+[Environment]::NewLine+'                if (command == "self-test")')
 [IO.File]::WriteAllText($program,$text,(New-Object Text.UTF8Encoding($false)))
 Copy-Item (Join-Path $root 'native\rebuilt-core\RebuiltCoreTests.cs') (Join-Path $temp 'RebuiltCoreTests.cs') -Force
 $MSBuild=Resolve-BuildMSBuild $MSBuild
@@ -55,9 +55,9 @@ Assert-BuildFramework
 if ($LASTEXITCODE -ne 0) { throw 'Research worker build failed' }
 $exe=Join-Path $out 'CMP90HXUnlocker.exe'
 $original=Join-Path $root 'vendor\nvpermissive-dist-469dc0c\obj\nvpermissive-core.o'
-foreach ($command in @('self-test','core-test','rebuilt-test')) {
+foreach ($command in @('self-test','core-test','quadro-test','rebuilt-test')) {
     $arguments=@($command)
-    if($command -eq 'core-test') { $arguments+=@('--core',$candidate) }
+    if($command -eq 'core-test' -or $command -eq 'quadro-test') { $arguments+=@('--core',$candidate) }
     elseif($command -eq 'rebuilt-test') { $arguments+=@('--reference',$original,'--core',$research) }
     $output=& $exe @arguments 2>&1
     $exit=$LASTEXITCODE

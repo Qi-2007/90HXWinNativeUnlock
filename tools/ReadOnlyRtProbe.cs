@@ -65,7 +65,7 @@ public static class ReadOnlyRtProbe
         byte[] output=new byte[size];uint returned;
         if(!DeviceIoControl(h,code,input,input.Length,output,size,out returned,IntPtr.Zero)) {
             int error=Marshal.GetLastWin32Error();
-            throw new System.ComponentModel.Win32Exception(error,"CMP90HXDma IOCTL 0x"+code.ToString("x8")+" Win32="+error+" ("+new System.ComponentModel.Win32Exception(error).Message+")");
+            throw new System.ComponentModel.Win32Exception(error,"CMP90HXUnlockNative IOCTL 0x"+code.ToString("x8")+" Win32="+error+" ("+new System.ComponentModel.Win32Exception(error).Message+")");
         }
         if(returned!=size) throw new Exception("Short IOCTL response");
         return output;
@@ -106,10 +106,10 @@ public static class ReadOnlyRtProbe
     { byte[] p=new byte[16];Buffer.BlockCopy(BitConverter.GetBytes(address),0,p,0,8);return BitConverter.ToUInt32(Io(h,0x8337e01c,p,4),0); }
     static void Registers(bool readRtFuse,bool readFeatureReadout)
     {
-        using(var h=CreateFile(@"\\.\CMP90HXDma",0xc0000000,0,IntPtr.Zero,3,0,IntPtr.Zero)) {
+        using(var h=CreateFile(@"\\.\CMP90HXUnlockNative",0xc0000000,0,IntPtr.Zero,3,0,IntPtr.Zero)) {
             if(h.IsInvalid) {
                 int error=Marshal.GetLastWin32Error();
-                throw new System.ComponentModel.Win32Exception(error,"Open CMP90HXDma Win32="+error+" ("+new System.ComponentModel.Win32Exception(error).Message+"); administrator access required; no registers have been read");
+                throw new System.ComponentModel.Win32Exception(error,"Open CMP90HXUnlockNative Win32="+error+" ("+new System.ComponentModel.Win32Exception(error).Message+"); administrator access required; no registers have been read");
             }
             byte[] info=Io(h,0x8337e000,new byte[0],40);
             if(BitConverter.ToUInt32(info,0)!=2 || BitConverter.ToUInt32(info,4)!=0) throw new Exception("Clean protocol-v2 driver required");

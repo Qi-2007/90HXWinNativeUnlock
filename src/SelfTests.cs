@@ -34,6 +34,7 @@ namespace CMP90HX
             foreach (RegisterRule r in Gen2Engine.Rules) mmio[Bar + r.Offset] = 0xa50c780d;
             mmio[Bar + 0x8860c] = 1; mmio[Bar + 0x88084] = 2; mmio[Bar + 0x880a4] = 2;
             mmio[Bar + 0x82381c] = 0x88888888; mmio[Bar + 0x823820] = 8; mmio[Bar + 0x823830] = 4;
+            mmio[Bar + 0x823808] = 0x03900888;
             mmio[Bar + 0x118128] = 0x8b8f; mmio[Bar + 0x118234] = 0x3ff; mmio[Bar + 0x100ce0] = 0x288;
         }
         void SetupCap(uint bdf, uint cap)

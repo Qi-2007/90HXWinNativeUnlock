@@ -11,7 +11,7 @@
 - 用户提供的 `nvidia-smi -q`：616.56，KMD 616.56，WDDM，Ampere，`00000000:02:00.0`，PCI `220D10DE`，VBIOS `94.02.74.00.07`。
 - 本机实时 PnP 查询：`NVIDIA CMP 90HX (RainCandy Technology)`，`32.0.16.1656`，`oem14.inf`。
 - 运行中 `nvlddmkm` 服务的路径：`C:\Windows\System32\DriverStore\FileRepository\nvac.inf_amd64_786a7910b35feb43\nvlddmkm.sys`。
-- `CMP90HXDma` 服务运行中；当前工具进程不是管理员。
+- `CMP90HXUnlockNative` 服务运行中；当前工具进程不是管理员。
 - INF 实际文本：RainCandy Technology Modified Edition (2026/08/26)，DriverVer `08/20/2026, 32.0.16.1656`。仅凭版本号不能断言与文档的 20260925 安装包二进制完全相同。
 
 已复制 `nvlddmkm.sys`、`nvwgf2umx.dll`、`nvrtum64.dll`、`nvapi64_impl.dll`、`nvac.inf` 到忽略目录 `drivers/rt-research-616.56/`，逐个校验源文件和副本 SHA256 一致。清单在 `logs/rt-research-20261004/driver-manifest.json`。
@@ -38,7 +38,7 @@ SRVOnlyTiledResourceTier3=1
 
 ## MMIO 未采集成功
 
-`--read-mmio` 在打开 `\\.\CMP90HXDma` 时收到 Win32 拒绝访问，未读取任何 GPU 寄存器。不能把缺失记录解释为寄存器为零。
+`--read-mmio` 在打开 `\\.\CMP90HXUnlockNative` 时收到 Win32 拒绝访问，未读取任何 GPU 寄存器。不能把缺失记录解释为寄存器为零。
 
 已检查当前驱动源码：`driver/src/driver.c` 的设备 ACL 为 `D:P(A;;GA;;;SY)(A;;GA;;;BA)`，仅 SYSTEM 和管理员可访问。`driver/src/hardware.h` 的 BindHardware 验证设备、桥和 BAR 后建立映射，不写 GPU/PCI；专用工具只允许 INFO、BIND、PCI_READ、MMIO_READ，未调用 DMA 映射/arm、write IOCTL 或现有解锁流程。BIND 会更新驱动内部绑定和映射状态，因此这里的“只读”指不写硬件寄存器。
 
@@ -51,7 +51,7 @@ Set-Location 'E:\code\90HX\90HXWindowsUnlock\90HXWindowsUnlock'
 .\tools\ReadOnlyRtProbe.ps1 -ReadMmio
 ```
 
-默认输出到新的 `logs/rt-probe-时间/`，无需安装或重编译 CMP90HXDma。省电后台可能并发访问该独占设备；如果设备忙或身份验证失败，保留错误记录，不自动暂停后台、停用 GPU 或重启。
+默认输出到新的 `logs/rt-probe-时间/`，无需安装或重编译 CMP90HXUnlockNative。省电后台可能并发访问该独占设备；如果设备忙或身份验证失败，保留错误记录，不自动暂停后台、停用 GPU 或重启。
 
 ## 静态分析的新线索
 
@@ -87,7 +87,7 @@ Helper RVA `0x1259a0` 的前段存在对象状态分支和间接调用；还没�
 2. 追踪 helper 和候选函数调用者、间接表引用；找到同版本 NVIDIA 原版二进制或可验证定义作对照，识别真实 RT Core 数量/能力判断。当前无法给出可用 patch 地址。
 3. 独立核实 GA102 value/override/READOUT/制造 fuse 定义和初始化时序后，才设计保留其他字段的 RMW。没有确认任何光追写值，包括 `0x03000000`。
 4. 即使 DXR 已报告 1.0，后续仍需要经授权的实际 DXR 正确性和吞吐实验；分别记录 AS 构建、射线执行、输出正确性及纯计算对照，再与正常 GA102 对照。不要只根据 RT 数量或 FPS 宣称恢复。
-5. 保持硬件有效状态与驱动判断两条证据链独立。如果需要 patch，须定位限制源于内核、用户态、固件还是缓存，而非先修改 CMP90HXDma 或 INF。
+5. 保持硬件有效状态与驱动判断两条证据链独立。如果需要 patch，须定位限制源于内核、用户态、固件还是缓存，而非先修改 CMP90HXUnlockNative 或 INF。
 
 当前未解决项：GA102 正式字段编码、制造 fuse 地址、有效 READOUT、真实 RT 性能、是否必须改 NVIDIA 驱动。`0x823808` 原值已在下述管理员采集中取得。
 

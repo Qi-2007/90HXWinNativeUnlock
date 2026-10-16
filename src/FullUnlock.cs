@@ -502,6 +502,9 @@ namespace CMP90HX
                 RecoveryResult result=gen2.Recover(true,bdf,device);
                 if (!result.Success || !Gen2Engine.CoreUnlockValid(result.After) || (result.After.Register(0x8860c)&1)==0)
                     throw new IOException("Final Gen2/core/VSEC verification failed: "+result.Code);
+                uint quadro=result.After.Register(0x823808);
+                if(GpuDmaProbe.Invalid(quadro) || (quadro&0x03900bbb)!=0x03900888)
+                    throw new IOException("Final Quadro source override verification failed; use the rebuilt RT core.");
                 foreach (uint offset in Gen2Engine.PlmOffsets) if (result.After.Register(offset)!=0xffffffff)
                     throw new IOException("PLM relocked during final verification.");
                 result.Before=device;

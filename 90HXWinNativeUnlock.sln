@@ -2,7 +2,7 @@
 # Visual Studio Version 18
 VisualStudioVersion = 18.10.12224.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CMP90HXDmaDriver", "driver\CMP90HXDma.vcxproj", "{7255CD13-9576-45D3-A558-D45CA4746D46}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CMP90HXUnlockNative", "driver\CMP90HXUnlockNative.vcxproj", "{7255CD13-9576-45D3-A558-D45CA4746D46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMP90HXUnlockProgram", "src\CMP90HXUnlockProgram.csproj", "{F1BD50C4-9C99-46CC-BB57-4C1A63DAE185}"
 EndProject

@@ -187,6 +187,8 @@ namespace CMP90HX
             AddRegister(s, 0x82381c, "SM_SPEED_SELECT_0");
             AddRegister(s, 0x823820, "SM_SPEED_SELECT_1");
             AddRegister(s, 0x823830, "GFX_SPEED_SELECT");
+            AddRegister(s, 0x823808, "FEATURE_OVERRIDE_QUADRO");
+            AddRegister(s, 0x823814, "FEATURE_READOUT_DIAGNOSTIC");
             return s;
         }
 

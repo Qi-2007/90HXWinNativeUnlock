@@ -360,11 +360,11 @@ namespace CMP90HX
             Console.WriteLine("  CMP90HXUnlocker.exe bridge-probe --drivers DIR --bdf 02:00.0 [--log FILE] (read-only ECAM/HAL comparison)");
             Console.WriteLine("  CMP90HXUnlocker.exe recover --baseline baseline.json --out result.json [--drivers DIR] [--bdf 01:00.0] [--tls-only] [--log FILE]");
             Console.WriteLine("  CMP90HXUnlocker.exe self-test");
-            Console.WriteLine("  Physical DMA: --dma-backend kernel --physical-dma-experiment; preinstalled CMP90HXDma.");
+            Console.WriteLine("  Physical DMA: --dma-backend kernel --physical-dma-experiment; preinstalled CMP90HXUnlockNative.");
             Console.WriteLine("  Experimental PnP DMA: --dma-backend iommu; CMP90HXDmaIommu must exclusively own the started 90HX. No GUI/PnP disable or NVIDIA driver coexistence.");
             Console.WriteLine("  CMP90HXUnlocker.exe arena-info [--log FILE]");
             Console.WriteLine("  CMP90HXUnlocker.exe iommu-status --dma-backend iommu [--log FILE] (startup diagnostics, no allocation/GPU access)");
-            Console.WriteLine("  CMP90HXDma protocol v2 must be installed/started for hardware commands; --drivers is a compatibility option only.");
+            Console.WriteLine("  CMP90HXUnlockNative protocol v2 must be installed/started for hardware commands; --drivers is a compatibility option only.");
             Console.WriteLine("  CMP90HXUnlocker.exe arena-reserve-test [--log FILE] (no GPU access)");
             Console.WriteLine("  CMP90HXUnlocker.exe dma-test --drivers DIR [--log FILE]");
             Console.WriteLine("  CMP90HXUnlocker.exe gpu-dma-test --drivers DIR --bdf 02:00.0 [--log FILE] (already disabled Code 22 required)");

@@ -7,12 +7,12 @@ function Add-Target([string]$relative) {
     $path=Join-Path $root $relative
     if(Test-Path -LiteralPath $path) { $targets.Add($path) }
 }
-foreach($name in @('dma-driver','dma-driver-v3.1','dma-driver-v4','dma-driver-v5',
+foreach($name in @('native-driver','dma-driver-v3.1','dma-driver-v4','dma-driver-v5',
     'gui','gui-v3','gui-v3.1','gui-v4','gui-v5','validated-v1','worker','payload-tests')) {
     Add-Target ('build\rebuilt-core\'+$name)
 }
-foreach($relative in @('build\core-rebuild','build\csharp-obj','build\gui-obj','build\dma-driver-obj',
-    'build\dma-driver','.build\rebuilt-driver-workspace','.build\rebuilt-gui',
+foreach($relative in @('build\core-rebuild','build\csharp-obj','build\gui-obj','build\native-driver-obj',
+    'build\native-driver','.build\rebuilt-driver-workspace','.build\rebuilt-gui',
     '.build\rebuilt-worker','.build\rebuilt-worker-hardware','.build\caller-validation',
     '.build\unified-name-validation-20261006',
     'native\rebuilt-core\README-history-v3.md','native\rebuilt-core\README-history-v4.md')) {

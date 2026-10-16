@@ -14,7 +14,7 @@ if ((Get-FileHash $core).Hash -ne $state.CandidateHash) { throw 'Rebuilt core ch
 $workspace=Join-Path $root '.build\rebuilt-driver-workspace'
 $driver=Join-Path $workspace 'driver'
 $policy=Join-Path $workspace 'build'
-$flavor=if($Iommu) {'iommu-driver'} else {'dma-driver'}
+$flavor=if($Iommu) {'iommu-driver'} else {'native-driver'}
 $out=Join-Path $root ('build\rebuilt-core\'+$flavor)
 if($OutputDirectory) { $out=[IO.Path]::GetFullPath($OutputDirectory) }
 New-Item -ItemType Directory -Path $driver,$policy,$out -Force | Out-Null
@@ -23,7 +23,7 @@ New-Item -ItemType Directory -Path $driver,$policy,$out -Force | Out-Null
 foreach($name in @('include','src')) {
     Copy-Item (Join-Path $root ('driver\'+$name)) -Destination $driver -Recurse -Force
 }
-foreach($name in @('CMP90HXDma.vcxproj','Resource.rc','resource.h','CMP90HXDmaIommu.inf')) {
+foreach($name in @('CMP90HXUnlockNative.vcxproj','Resource.rc','resource.h','CMP90HXDmaIommu.inf')) {
     Copy-Item (Join-Path $root ('driver\'+$name)) -Destination $driver -Force
 }
 [IO.File]::WriteAllText((Join-Path $policy 'caller-policy.h'),(Get-CallerPolicyContent $hash),[Text.Encoding]::ASCII)
@@ -39,17 +39,20 @@ if($SdkVersion) {
 } elseif($versions.Count) { $SdkVersion=$versions[0].Name }
 else { throw 'Matching SDK/WDK is required' }
 $log=Join-Path $out 'build.log'
-$messages=& $MSBuild (Join-Path $driver 'CMP90HXDma.vcxproj') /t:Rebuild /m /p:Configuration=Release /p:Platform=x64 `
+$messages=& $MSBuild (Join-Path $driver 'CMP90HXUnlockNative.vcxproj') /t:Rebuild /m /p:Configuration=Release /p:Platform=x64 `
     "/p:WindowsTargetPlatformVersion=$SdkVersion" "/p:IommuBackend=$($Iommu.IsPresent.ToString().ToLowerInvariant())" `
     "/p:OutDir=$out\" "/p:IntDir=$workspace\obj-$flavor\" /verbosity:minimal 2>&1
 $exit=$LASTEXITCODE
 $messages | Set-Content $log -Encoding utf8
 if ($exit -ne 0) { $messages | Out-Host; throw 'Isolated research driver build failed' }
-$sys=Join-Path $out $(if($Iommu) {'CMP90HXDmaIommu.sys'} else {'CMP90HXDma.sys'})
+$sys=Join-Path $out $(if($Iommu) {'CMP90HXDmaIommu.sys'} else {'CMP90HXUnlockNative.sys'})
 Assert-DriverCallerPolicy $sys $hash
 Copy-Item $worker $out -Force
 Copy-Item ($worker+'.config') $out -Force
-Copy-Item $core $out -Force
+# Package names are the Console/runtime ABI, independent of intermediate names.
+$packagedCore=Join-Path $out 'nvpermissive-core.o'
+Copy-Item -LiteralPath $core -Destination $packagedCore -Force
+if((Get-FileHash -LiteralPath $packagedCore).Hash -ne $state.CandidateHash) { throw 'Packaged core hash mismatch' }
 if($Iommu) { Copy-Item (Join-Path $driver 'CMP90HXDmaIommu.inf') $out -Force }
 @{WorkerHash=$hash;CoreHash=(Get-FileHash $core).Hash;DriverHash=(Get-FileHash $sys).Hash;
     Signed=$false;Installed=$false;HardwareExecuted=$false;SdkVersion=$SdkVersion} |
